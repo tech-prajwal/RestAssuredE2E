@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="2" total="3" passed="1" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2026-01-26T14:31:28 IST" name="Default suite" finished-at="2026-01-26T14:31:30 IST" duration-ms="2080">
+    <groups>
+    </groups>
+    <test started-at="2026-01-26T14:31:28 IST" name="Default test" finished-at="2026-01-26T14:31:30 IST" duration-ms="2080">
+      <class name="com.qa.api.gorest.tests.CreateUserTest">
+        <test-method is-config="true" signature="setup()[pri:0, instance:com.qa.api.gorest.tests.CreateUserTest@9f116cc]" started-at="2026-01-26T14:31:28 IST" name="setup" finished-at="2026-01-26T14:31:29 IST" duration-ms="430" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setup -->
+        <test-method signature="createAUserTestWithJsonString()[pri:0, instance:com.qa.api.gorest.tests.CreateUserTest@9f116cc]" started-at="2026-01-26T14:31:29 IST" name="createAUserTestWithJsonString" finished-at="2026-01-26T14:31:30 IST" duration-ms="1609" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- createAUserTestWithJsonString -->
+      </class> <!-- com.qa.api.gorest.tests.CreateUserTest -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
