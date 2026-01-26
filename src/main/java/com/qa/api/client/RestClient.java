@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.Map;
 
 import com.qa.api.constants.AuthType;
@@ -39,7 +40,7 @@ public class RestClient {
 			request.header("Authorization", "Bearer " + ConfigManager.get("bearertoken"));
 			break;
 		case BASIC_AUTH:
-			request.header("Authorization", "Basic " + "Oauth Token");
+			request.header("Authorization", "Basic " + generateBasicAuthToken());
 			break;
 		case API_KEY:
 			request.header("x-api-key", "api key");
@@ -55,6 +56,11 @@ public class RestClient {
 		return request;
 	}
 
+	private String generateBasicAuthToken() {
+		String credentials = ConfigManager.get("basicauthusername") + ":" + ConfigManager.get("basicauthpassword");
+		return Base64.getEncoder().encodeToString(credentials.getBytes());
+	}
+	
 	private void applyParams(RequestSpecification request, Map<String, String> queryParams,
 			Map<String, String> pathParams) {
 		if (queryParams != null) {
@@ -114,5 +120,35 @@ public class RestClient {
 		response.prettyPrint();
 		return response;
 
+	}
+	
+	public <T> Response put(String baseUrl, String endPoint, T body, Map<String, String> queryParams,
+			Map<String, String> pathParams, AuthType authType, ContentType contentType) {
+
+		RequestSpecification request = setupRequest(baseUrl, authType, contentType);
+		applyParams(request, queryParams, pathParams);
+		Response response = request.body(body).put(endPoint).then().spec(responseSpec200).extract().response();
+		response.prettyPrint();
+		return response;
+	}
+	
+	public <T> Response patch(String baseUrl, String endPoint, T body, Map<String, String> queryParams,
+			Map<String, String> pathParams, AuthType authType, ContentType contentType) {
+
+		RequestSpecification request = setupRequest(baseUrl, authType, contentType);
+		applyParams(request, queryParams, pathParams);
+		Response response = request.body(body).patch(endPoint).then().spec(responseSpec200).extract().response();
+		response.prettyPrint();
+		return response;
+	}
+	
+	public <T> Response delete(String baseUrl, String endPoint, Map<String, String> queryParams,
+			Map<String, String> pathParams, AuthType authType, ContentType contentType) {
+
+		RequestSpecification request = setupRequest(baseUrl, authType, contentType);
+		applyParams(request, queryParams, pathParams);
+		Response response = request.delete(endPoint).then().spec(responseSpec204).extract().response();
+		response.prettyPrint();
+		return response;
 	}
 }

@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.qa.api.base.BaseTest;
 import com.qa.api.constants.AuthType;
+import com.qa.api.manager.ConfigManager;
 import com.qa.api.pojo.User;
 import com.qa.api.utils.StringUtils;
 
@@ -17,6 +19,13 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public class CreateUserTest extends BaseTest{
+	
+	private String tokenId;
+	@BeforeClass
+	public void setUpToken() {
+		tokenId = "a77b03df858ed8ed5c1f1593ac495c974603adc5df88fe84fd4250b7361a3cea";
+		ConfigManager.set("bearertoken", tokenId);
+	}
 	
 	@Test
 	public void createAUserTest() {
@@ -31,8 +40,6 @@ public class CreateUserTest extends BaseTest{
 	
 	@Test
 	public void createAUserTestWithJsonString() {
-
-
 		String userJson = "{\n"
 				+ "\"name\": \"prajwal\",\n"
 				+ "\"email\": \"prajwal8089@gmail.com\",\n"
