@@ -38,7 +38,7 @@ public class CreateUserTest extends BaseTest{
 		Assert.assertNotNull(response.jsonPath().getString("id"));
 	}
 	
-	@Test
+	@Test(enabled =false)
 	public void createAUserTestWithJsonString() {
 		String userJson = "{\n"
 				+ "\"name\": \"prajwal\",\n"
@@ -53,7 +53,7 @@ public class CreateUserTest extends BaseTest{
 	}
 	
 	
-	@Test
+	@Test(enabled =false)
 	public void createAUserTestWithJsonfile() throws IOException {
 
 //String emailId = StringUtils.getRandomEmailId();

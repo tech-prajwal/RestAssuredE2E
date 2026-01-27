@@ -3,13 +3,12 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="com.qa.api.amadeus.tests.AmadeusAPITest">
+      <class name="com.qa.api.circuit.tests.CircuitAPIWithXMLTest">
         <methods>
-          <include name="getFlightDetailsTest"/>
-          <include name="getOAuth2Token"/>
+          <include name="getCircuitInfoTest"/>
           <include name="setup"/>
         </methods>
-      </class> <!-- com.qa.api.amadeus.tests.AmadeusAPITest -->
+      </class> <!-- com.qa.api.circuit.tests.CircuitAPIWithXMLTest -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->

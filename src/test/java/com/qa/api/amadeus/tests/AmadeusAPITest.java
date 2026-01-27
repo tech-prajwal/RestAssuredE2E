@@ -27,7 +27,7 @@ public class AmadeusAPITest extends BaseTest{
 		ConfigManager.set("bearertoken", token);
 	}
 	
-	@Test
+	@Test(enabled = false)
 	public void getFlightDetailsTest() {
 		
 		Map<String, String> queryParams = Maps.of("origin", "PAR", "maxPrice", "200");

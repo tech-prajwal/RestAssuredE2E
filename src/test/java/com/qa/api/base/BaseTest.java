@@ -14,6 +14,7 @@ public class BaseTest {
 	protected final static String BASE_URL_BASIC_AUTH = "https://the-internet.herokuapp.com";
 	protected final static String BASE_URL_PRODUCTS = "https://fakestoreapi.com";
 	protected final static String BASE_URL_OAUTH2_AMADEUS = "https://test.api.amadeus.com";
+	protected final static String BASE_URL_ERGAST_CIRCUIT = "https://ergast.com";
 	
 	protected final static String GOREST_USERS_ENDPOINT = "/public/v2/users";
 	protected final static String CONTACTS_LOGIN_ENDPOINT = "/users/login";
@@ -23,6 +24,7 @@ public class BaseTest {
 	protected final static String PRODUCTS_ENDPOINT = "/products";
 	protected final static String AMADEUS_OAUTH2_TOKEN_ENDPOINT = "/v1/security/oauth2/token";
 	protected final static String AMADEUS_FLIGHT_DEST_ENDPOINT = "/v1/shopping/flight-destinations";
+	protected final static String ERGAST_CIRCUIT_ENDPOINT = "/api/f1/2017/circuits.xml";
 	
 	@BeforeTest
 	public void setup() {
