@@ -29,7 +29,7 @@ public class CreateUserTest extends BaseTest{
 	
 	@Test
 	public void createAUserTest() {
-		User user = new User("Prajwal", StringUtils.getRandomEmailId(), "male", "active");			
+		User user = new User(null, "Prajwal", StringUtils.getRandomEmailId(), "male", "active");			
 	
 		Response response = restClient.post(BASE_URL_GOREST, GOREST_USERS_ENDPOINT, user, null, null, AuthType.BEARER_TOKEN, ContentType.JSON);
 		Assert.assertEquals(response.jsonPath().getString("name"), "Prajwal");

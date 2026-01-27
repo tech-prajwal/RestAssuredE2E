@@ -34,7 +34,5 @@ public class ContactsAPITest extends BaseTest{
 	public void getAllContactsTest() {
 		Response response = restClient.get(BASE_URL_CONTACTS,CONTACTS_ENDPOINT , null, null, AuthType.BEARER_TOKEN, ContentType.JSON);
 		Assert.assertEquals(response.statusCode(), 200);
-	}
-	
-	
+	}	
 }

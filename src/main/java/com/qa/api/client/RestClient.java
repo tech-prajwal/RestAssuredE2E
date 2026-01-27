@@ -31,7 +31,6 @@ public class RestClient {
 	private ResponseSpecification responseSpec200or404 = expect().statusCode(anyOf(equalTo(200), equalTo(404)));
 
 	private RequestSpecification setupRequest(String baseUrl, AuthType authType, ContentType contentType) {
-
 		RequestSpecification request = RestAssured.given().log().all().baseUri(baseUrl).contentType(contentType)
 				.accept(contentType);
 
@@ -52,7 +51,6 @@ public class RestClient {
 			System.out.println("this auth is not supported....please pass the right AuthType...");
 			throw new APIException("===Invalid Auth====");
 		}
-
 		return request;
 	}
 
@@ -109,6 +107,18 @@ public class RestClient {
 
 	}
 
+	public Response post(String baseUrl, String endPoint, String clientId, String clientSecret, String grantType, ContentType contentType) {
+		Response response = RestAssured.given().log().all()
+				.contentType(ContentType.URLENC)
+				.formParam("grant_type", grantType)
+				.formParam("client_id", clientId)
+				.formParam("client_secret", clientSecret)
+				.when()
+					.post(baseUrl + endPoint);
+		response.prettyPrint();
+		return response;
+	}
+	
 	public Response post(String baseUrl, String endPoint, File file, Map<String, String> queryParams,
 			Map<String, String> pathParams, AuthType authType, ContentType contentType) {
 
