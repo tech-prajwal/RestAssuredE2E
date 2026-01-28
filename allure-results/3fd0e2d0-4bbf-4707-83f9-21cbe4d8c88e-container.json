@@ -1,1 +1,0 @@
-{"uuid":"3fd0e2d0-4bbf-4707-83f9-21cbe4d8c88e","name":"Go Rest API Test - Delete User","children":["a51042c8-b5bb-4d57-9079-42aa52ece0fb"],"befores":[{"name":"setup","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1769574387242,"stop":1769574387242}],"afters":[],"start":1769574387242,"stop":1769574387959}

@@ -1,1 +1,0 @@
-{"uuid":"f45a5ad9-3039-4aec-8a88-b69513d6690c","name":"Product API Test - Get Product With Json Path","children":["155747e1-8fc1-40ff-9f56-3d70fac88894"],"befores":[{"name":"setup","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1769572899611,"stop":1769572899611}],"afters":[],"start":1769572899611,"stop":1769572900011}
