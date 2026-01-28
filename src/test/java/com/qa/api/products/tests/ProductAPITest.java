@@ -3,6 +3,7 @@ package com.qa.api.products.tests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.aventstack.chaintest.plugins.ChainTestListener;
 import com.qa.api.base.BaseTest;
 import com.qa.api.constants.AuthType;
 import com.qa.api.pojo.Product;
@@ -30,5 +31,6 @@ public class ProductAPITest extends BaseTest {
 			System.out.println("count: " + p.getRating().getCount());
 
 		}
+		ChainTestListener.log("get products verified");
 	}
 }

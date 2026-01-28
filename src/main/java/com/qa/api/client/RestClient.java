@@ -8,10 +8,12 @@ import java.io.File;
 import java.util.Base64;
 import java.util.Map;
 
+import com.aventstack.chaintest.plugins.ChainTestListener;
 import com.qa.api.constants.AuthType;
 import com.qa.api.exceptions.APIException;
 import com.qa.api.manager.ConfigManager;
 
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -31,6 +33,8 @@ public class RestClient {
 	private ResponseSpecification responseSpec200or404 = expect().statusCode(anyOf(equalTo(200), equalTo(404)));
 
 	private RequestSpecification setupRequest(String baseUrl, AuthType authType, ContentType contentType) {
+		ChainTestListener.log("API Base URL" + baseUrl);
+		ChainTestListener.log("API Base URL" + authType.toString());
 		RequestSpecification request = RestAssured.given().log().all().baseUri(baseUrl).contentType(contentType)
 				.accept(contentType);
 
@@ -61,6 +65,7 @@ public class RestClient {
 	
 	private void applyParams(RequestSpecification request, Map<String, String> queryParams,
 			Map<String, String> pathParams) {
+		ChainTestListener.log("query param" + queryParams + "path param" + pathParams);
 		if (queryParams != null) {
 			request.queryParams(queryParams);
 		}
@@ -84,6 +89,7 @@ public class RestClient {
 	 * @param contentType
 	 * @return it returns the GET api call response
 	 */
+	@Step("calling the get api with base url: {0}")
 	public Response get(String baseUrl, String endPoint, Map<String, String> queryParams,
 			Map<String, String> pathParams, AuthType authType, ContentType contentType) {
 

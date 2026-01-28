@@ -3,6 +3,7 @@ package com.qa.api.gorest.tests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.aventstack.chaintest.plugins.ChainTestListener;
 import com.qa.api.base.BaseTest;
 import com.qa.api.constants.AuthType;
 import com.qa.api.pojo.User;
@@ -29,6 +30,7 @@ public class DeleteUserTest extends BaseTest{
 		//fetch the userId:
 		String userId = responsePost.jsonPath().getString("id");
 		System.out.println("user id ===>" + userId);
+		ChainTestListener.log("user id :" + userId);
 		
 		//2. GET: fetch the user using the same user id:
 		Response responseGet = restClient.get(BASE_URL_GOREST, GOREST_USERS_ENDPOINT+"/"+userId, null, null, AuthType.BEARER_TOKEN, ContentType.JSON);
