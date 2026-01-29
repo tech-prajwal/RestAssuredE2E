@@ -1,56 +1,100 @@
-pipeline{ 
+pipeline 
+{
     agent any
-    stages{
-        stage("build"){
-            steps{
-                echo("build the project")
+    
+    tools{
+        maven 'maven'
+        }
+
+    stages 
+    {
+        stage('Build') 
+        {
+            steps
+            {
+                 git 'https://github.com/jglick/simple-maven-project-with-tests.git'
+                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+            post 
+            {
+                success
+                {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
+                }
             }
         }
-        stage("Run Unit test"){
-            steps{
-                echo("run UTs")
-            }
-        }
-        stage("Run Integration test"){
-            steps{
-                echo("run ITs")
-            }
-        }
-        stage("Deploy to dev"){
-            steps{
-                echo("deploy to dev")
-            }
-        }
+        
         stage("Deploy to QA"){
             steps{
-                echo("deploy to QA")
+                echo("deploy to qa done")
             }
         }
-        stage("Run regression API test cases on QA"){
+          
+        stage('Regression API Automation Tests on QA') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
+                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
+                    
+                }
+            }
+        }
+                
+        stage('Publish Allure Reports') {
+           steps {
+                script {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: '/allure-results']]
+                    ])
+                }
+            }
+        }
+        
+        stage('Publish ChainTest Report'){
             steps{
-                echo("Run API test cases on QA")
+                     publishHTML([allowMissing: false,
+                                  alwaysLinkToLastBuild: false, 
+                                  keepAll: true, 
+                                  reportDir: 'target/chaintest', 
+                                  reportFiles: 'Index.html', 
+                                  reportName: 'HTML API Regression ChainTest Report', 
+                                  reportTitles: ''])
             }
         }
-        stage("Deploy to stage"){
+        
+        stage("Deploy to Stage"){
             steps{
-                echo("deploy to stage")
+                echo("deploy to Stage")
             }
         }
-        stage("Run sanity API test cases on Stage"){
+        
+        stage('Sanity API Automation Test on Stage') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
+                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml"
+                    
+                }
+            }
+        }
+        
+        stage('Publish sanity ChainTest Report'){
             steps{
-                echo("Run API sanity test cases on Stage")
+                     publishHTML([allowMissing: false,
+                                  alwaysLinkToLastBuild: false, 
+                                  keepAll: true, 
+                                  reportDir: 'target/chaintest', 
+                                  reportFiles: 'Index.html', 
+                                  reportName: 'HTML API Sanity ChainTest Report', 
+                                  reportTitles: ''])
             }
         }
-        stage("Deploy to UAT"){
-            steps{
-                echo("deploy to UAT")
-            }
-        }
-        stage("Run UAT API test cases on UAT"){
-            steps{
-                echo("Run API UAT test cases on UAT")
-            }
-        }
+        
         stage("Deploy to PROD"){
             steps{
                 echo("deploy to PROD")
