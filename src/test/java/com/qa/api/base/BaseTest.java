@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Listeners;
 import com.aventstack.chaintest.plugins.ChainTestListener;
 import com.qa.api.client.RestClient;
+import com.qa.api.manager.ConfigManager;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -14,9 +15,11 @@ public class BaseTest {
 
 	protected RestClient restClient;
 	
-	protected final static String BASE_URL_GOREST = "https://gorest.co.in";
+	protected static String BASE_URL_GOREST;
+	protected static String BASE_URL_REQRES;
+	
+	
 	protected final static String BASE_URL_CONTACTS = "https://thinking-tester-contact-list.herokuapp.com";
-	protected final static String BASE_URL_REQRES = "https://reqres.in";
 	protected final static String BASE_URL_BASIC_AUTH = "https://the-internet.herokuapp.com";
 	protected final static String BASE_URL_PRODUCTS = "https://fakestoreapi.com";
 	protected final static String BASE_URL_OAUTH2_AMADEUS = "https://test.api.amadeus.com";
@@ -33,8 +36,10 @@ public class BaseTest {
 	protected final static String ERGAST_CIRCUIT_ENDPOINT = "/api/f1/2017/circuits.xml";
 	
 	@BeforeSuite
-	public void setupAllureReport() {
+	public void initialSetup() {
 		RestAssured.filters(new AllureRestAssured());
+		BASE_URL_GOREST = ConfigManager.get("baseurl.gorest").trim();
+		BASE_URL_REQRES = ConfigManager.get("baseurl.reqres").trim();
 	}
 	
 	@BeforeTest
