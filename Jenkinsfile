@@ -171,18 +171,3 @@ environment {
       }
    }
 }
-Gaurav Varma A
-8 Jun 2025 at 16:48
-with both win or linux
-
- stage('Build Docker Image') {
-         steps {
-            script {
-               if (isUnix()) {
-                  sh "docker build -t ${DOCKER_IMAGE} ."
-               } else {
-                  bat "docker build -t ${DOCKER_IMAGE} ."
-               }
-            }
-         }
-      }
