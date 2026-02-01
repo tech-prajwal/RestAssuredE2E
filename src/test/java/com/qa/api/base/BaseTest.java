@@ -1,11 +1,13 @@
 package com.qa.api.base;
 
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Listeners;
 import com.aventstack.chaintest.plugins.ChainTestListener;
 import com.qa.api.client.RestClient;
 import com.qa.api.manager.ConfigManager;
+import com.qa.api.mocking.WireMockSetup;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -24,6 +26,7 @@ public class BaseTest {
 	protected final static String BASE_URL_PRODUCTS = "https://fakestoreapi.com";
 	protected final static String BASE_URL_OAUTH2_AMADEUS = "https://test.api.amadeus.com";
 	protected final static String BASE_URL_ERGAST_CIRCUIT = "https://ergast.com";
+	protected final static String BASE_URL_MOCK_SERVER = "http://localhost:8089";
 	
 	protected final static String GOREST_USERS_ENDPOINT = "/public/v2/users";
 	protected final static String CONTACTS_LOGIN_ENDPOINT = "/users/login";
@@ -45,5 +48,13 @@ public class BaseTest {
 	@BeforeTest
 	public void setup() {
 		restClient = new RestClient();
+		WireMockSetup.startWireMockeServer();
 	}
+	
+	@AfterTest
+	public void stopMockServer() {
+		WireMockSetup.stopWireMockServer();
+	}
+	
+	
 }
