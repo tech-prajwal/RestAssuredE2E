@@ -6,124 +6,183 @@ pipeline
         maven 'maven'
         }
 
-    stages 
-    {
-        stage('Build') 
-        {
-            steps
-            {
-                 git 'https://github.com/jglick/simple-maven-project-with-tests.git'
-                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
+environment {
+      DOCKER_IMAGE = "praj77/apiframework:${BUILD_NUMBER}"
+      DOCKER_CREDENTIALS_ID = 'dockerhub_credentials'
+   }
+ stages {
+      stage('Checkout Code') {
+         steps {
+            git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
+         }
+      }
+      
+      stage('Build Docker Image') {
+         steps {
+            bat "docker build -t ${DOCKER_IMAGE} ."
+         }
+      }
+      
+      stage('Push Docker Image to Docker Hub') {
+         steps {
+            withCredentials([usernamePassword(
+            credentialsId: "${DOCKER_CREDENTIALS_ID}",
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+            )]) {
+               bat """
+               echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+               docker push %DOCKER_IMAGE%
+               """
             }
-            post 
-            {
-                success
-                {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
-                }
+         }
+      }
+      
+      stage('Deploy to Dev') {
+         steps {
+            echo 'Deploying to Dev environment...'
+         }
+      }
+      
+      stage('Run Sanity Tests on Dev') {
+         steps {
+            script {
+               def status = bat(
+               script: """
+               docker run --rm -v %WORKSPACE%:/app -w /app ${DOCKER_IMAGE} ^
+               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testRunners/testng_regression.xml
+               """,
+               returnStatus: true
+               )
+               if (status != 0) {
+                  currentBuild.result = 'UNSTABLE'
+               }
             }
-        }
-        
-        stage("Deploy to Dev"){
-            steps{
-                echo("deploy to Dev")
+         }
+      }
+      
+      
+      stage('Deploy to QA') {
+         steps {
+            echo 'Deploying to QA environment...'
+         }
+      }
+      
+      stage('Run Regression Tests on QA') {
+         steps {
+            script {
+               def status = bat(
+               script: """
+               docker run --rm -v %WORKSPACE%:/app -w /app ${DOCKER_IMAGE} ^
+               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testRunners/testng_regression.xml
+               """,
+               returnStatus: true
+               )
+               if (status != 0) {
+                  currentBuild.result = 'UNSTABLE'
+               }
             }
-        }
-        
-        stage('Sanity API Automation Test on DEV') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml -Denv=dev"
-                }
+         }
+      }
+      stage('Publish Allure Reports') {
+         steps {
+            allure([
+            includeProperties: false,
+            jdk: '',
+            properties: [],
+            reportBuildPolicy: 'ALWAYS',
+            results: [[path: 'target/allure-results']]
+            ])
+         }
+      }
+      
+      stage('Publish ChainTest Report') {
+         steps {
+            publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'target/chaintest',
+            reportFiles: 'Index.html',
+            reportName: 'HTML API Regression ChainTest Report',
+            reportTitles: ''
+            ])
+         }
+      }
+      
+      stage('Deploy to Stage') {
+         steps {
+            echo 'Deploying to Stage environment...'
+         }
+      }
+      
+      stage('Run Sanity Tests on Stage') {
+         steps {
+            script {
+               def status = bat(
+               script: """
+               docker run --rm -v %WORKSPACE%:/app -w /app ${DOCKER_IMAGE} ^
+               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testRunners/testng_regression.xml
+               """,
+               returnStatus: true
+               )
+               if (status != 0) {
+                  currentBuild.result = 'UNSTABLE'
+               }
             }
-        }
-        
-        stage("Deploy to QA"){
-            steps{
-                echo("deploy to qa done")
+         }
+      }
+      
+      stage('Publish Sanity ChainTest Report') {
+         steps {
+            publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'target/chaintest',
+            reportFiles: 'Index.html',
+            reportName: 'HTML API Sanity ChainTest Report',
+            reportTitles: ''
+            ])
+         }
+      }
+      
+      stage('Deploy to Prod') {
+         steps {
+            echo 'Deploying to Prod environment...'
+         }
+      }
+      
+      stage('Run Sanity Tests on Prod') {
+         steps {
+            script {
+               def status = bat(
+               script: """
+               docker run --rm -v %WORKSPACE%:/app -w /app ${DOCKER_IMAGE} ^
+               mvn test -Dsurefire.suiteXmlFiles=src/test/resources/testRunners/testng_regression.xml
+               """,
+               returnStatus: true
+               )
+               if (status != 0) {
+                  currentBuild.result = 'UNSTABLE'
+               }
             }
-        }
-          
-        stage('Regression API Automation Tests on QA') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml -Denv=qa"
-                    
-                }
-            }
-        }
-                
-        stage('Publish Allure Reports') {
-           steps {
-                script {
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: '/allure-results']]
-                    ])
-                }
-            }
-        }
-        
-        stage('Publish ChainTest Report'){
-            steps{
-                     publishHTML([allowMissing: false,
-                                  alwaysLinkToLastBuild: false, 
-                                  keepAll: true, 
-                                  reportDir: 'target/chaintest', 
-                                  reportFiles: 'Index.html', 
-                                  reportName: 'HTML API Regression ChainTest Report', 
-                                  reportTitles: ''])
-            }
-        }
-        
-        stage("Deploy to Stage"){
-            steps{
-                echo("deploy to Stage")
-            }
-        }
-        
-        stage('Sanity API Automation Test on Stage') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml -Denv=stage"
-                    
-                }
-            }
-        }
-        
-        stage('Publish sanity ChainTest Report'){
-            steps{
-                     publishHTML([allowMissing: false,
-                                  alwaysLinkToLastBuild: false, 
-                                  keepAll: true, 
-                                  reportDir: 'target/chaintest', 
-                                  reportFiles: 'Index.html', 
-                                  reportName: 'HTML API Sanity ChainTest Report', 
-                                  reportTitles: ''])
-            }
-        }
-        
-        stage("Deploy to PROD"){
-            steps{
-                echo("deploy to PROD")
-            }
-        }
-        
-        stage('Sanity API Automation Test on PROD') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    git 'https://github.com/tech-prajwal/RestAssuredE2E.git'
-                    bat "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_sanity.xml -Denv=prod"
-                    
-                }
-            }
-        }
-    }
+         }
+      }
+   }
 }
+Gaurav Varma A
+8 Jun 2025 at 16:48
+with both win or linux
+
+ stage('Build Docker Image') {
+         steps {
+            script {
+               if (isUnix()) {
+                  sh "docker build -t ${DOCKER_IMAGE} ."
+               } else {
+                  bat "docker build -t ${DOCKER_IMAGE} ."
+               }
+            }
+         }
+      }
